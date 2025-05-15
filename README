@@ -40,7 +40,7 @@ Uma API RESTful para gerenciar informações de filmes, com preenchimento autom�
 
 1. Clone o repositório:
    ```bash
-   git clone <url-do-repositorio>
+   git clone git clone https://github.com/Marcus-Monaco/movie-api.git
    cd movie-project
    ```
 
