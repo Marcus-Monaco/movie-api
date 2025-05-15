@@ -1,0 +1,247 @@
+# Movie API Project
+
+Uma API RESTful para gerenciar informações de filmes, com preenchimento automático de dados via OMDb API.
+
+## Funcionalidades
+
+- **Cadastro de filmes** com preenchimento automático de informações:
+  - Ano de lançamento
+  - Diretores
+  - Gênero
+  - Sinopse
+  - Classificação (rating)
+  - URL do poster
+- **Listagem de filmes** com paginação (10 filmes por página)
+- **Busca avançada** com múltiplos filtros:
+  - Por título (busca parcial)
+  - Por gênero
+  - Por ano ou intervalo de anos
+  - Por classificação mínima
+- **Visualização detalhada** de cada filme
+- **Atualização** completa ou parcial de filmes
+- **Remoção** de filmes
+- **API RESTful** completa com suporte a todos os métodos HTTP
+
+## Tecnologias Utilizadas
+
+- Django 5.0
+- Django REST Framework
+- Python 3.10+
+- OMDb API para busca de informações de filmes
+- Django Filter para filtragem avançada
+- Docker e Docker Compose para containerização
+
+## Requisitos
+
+- Docker e Docker Compose
+- Chave de API da OMDb (obtenha em [omdbapi.com](http://www.omdbapi.com/apikey.aspx))
+
+## Configuração
+
+1. Clone o repositório:
+   ```bash
+   git clone <url-do-repositorio>
+   cd movie-project
+   ```
+
+2. Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+   ```
+   DEBUG=True
+   SECRET_KEY=sua-chave-secreta-aqui
+   OMDB_API_KEY=sua-chave-da-omdb-api-aqui
+   ```
+
+3. Inicie os containers com Docker Compose:
+   ```bash
+   docker-compose up --build  
+   ```
+
+4. Acesse a API em [http://localhost:8000/api/movies/](http://localhost:8000/api/movies/)
+
+## Uso da API
+
+### Endpoints Disponíveis
+
+- `GET /api/movies/` - Lista todos os filmes (paginado)
+- `POST /api/movies/` - Cria um novo filme
+- `GET /api/movies/{id}/` - Obtém detalhes de um filme específico
+- `PUT /api/movies/{id}/` - Atualiza um filme completamente
+- `PATCH /api/movies/{id}/` - Atualiza um filme parcialmente
+- `DELETE /api/movies/{id}/` - Remove um filme
+
+### Exemplos de Uso
+
+#### Listar todos os filmes (primeira página)
+```bash
+curl http://localhost:8000/api/movies/
+```
+
+#### Navegar para a segunda página
+```bash
+curl http://localhost:8000/api/movies/?page=2
+```
+
+#### Filtrar filmes por título
+```bash
+curl http://localhost:8000/api/movies/?title=matrix
+```
+
+#### Filtrar filmes por gênero
+```bash
+curl http://localhost:8000/api/movies/?genre=action
+```
+
+#### Filtrar filmes por ano
+```bash
+curl http://localhost:8000/api/movies/?year=1999
+```
+
+#### Filtrar filmes por intervalo de anos
+```bash
+curl http://localhost:8000/api/movies/?year_min=1990&year_max=2000
+```
+
+#### Filtrar filmes por classificação mínima
+```bash
+curl http://localhost:8000/api/movies/?rating_min=8.0
+```
+
+#### Combinar múltiplos filtros
+```bash
+curl http://localhost:8000/api/movies/?genre=action&rating_min=8.0
+```
+
+#### Criar um novo filme (preenchimento automático)
+```bash
+curl -X POST http://localhost:8000/api/movies/ \
+  -H "Content-Type: application/json" \
+  -d '{"title": "The Matrix"}'
+```
+
+#### Obter detalhes de um filme específico
+```bash
+curl http://localhost:8000/api/movies/1/
+```
+
+#### Atualizar parcialmente um filme
+```bash
+curl -X PATCH http://localhost:8000/api/movies/1/ \
+  -H "Content-Type: application/json" \
+  -d '{"rating": 9.5}'
+```
+
+#### Atualizar completamente um filme
+```bash
+curl -X PUT http://localhost:8000/api/movies/1/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "The Matrix",
+    "year": 1999,
+    "directors": "Lana Wachowski, Lilly Wachowski",
+    "genre": "Action, Sci-Fi",
+    "plot": "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+    "rating": 9.0
+  }'
+```
+
+#### Remover um filme
+```bash
+curl -X DELETE http://localhost:8000/api/movies/1/
+```
+
+### Interface Navegável
+
+A API também oferece uma interface navegável que pode ser acessada pelo navegador:
+
+1. Acesse [http://localhost:8000/api/movies/](http://localhost:8000/api/movies/) para ver a lista de filmes
+2. Clique em um filme específico para ver seus detalhes
+3. Use o formulário na parte inferior da página para:
+   - Criar novos filmes (na página de listagem)
+   - Atualizar filmes existentes (na página de detalhes)
+   - Excluir filmes (na página de detalhes)
+
+## Preenchimento Automático
+
+Uma das principais funcionalidades desta API é o preenchimento automático de informações do filme. Ao criar um filme fornecendo apenas o título, a API consulta a OMDb API para obter:
+
+- Ano de lançamento
+- Diretores
+- Gênero
+- Sinopse
+- Classificação (rating)
+- URL do poster
+
+Exemplo de criação com preenchimento automático:
+```bash
+curl -X POST http://localhost:8000/api/movies/ \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Inception"}'
+```
+
+A resposta incluirá todos os campos preenchidos automaticamente:
+```json
+{
+  "id": 3,
+  "title": "Inception",
+  "year": 2010,
+  "directors": "Christopher Nolan",
+  "genre": "Action, Adventure, Sci-Fi",
+  "plot": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+  "rating": 8.8,
+  "poster_url": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+  "created_at": "2023-06-15T14:32:21.123456Z"
+}
+```
+
+## Paginação
+
+A API utiliza paginação para lidar com grandes volumes de dados. Por padrão, cada página contém 10 filmes. A resposta da listagem de filmes tem a seguinte estrutura:
+
+```json
+{
+  "count": 42,
+  "next": "http://localhost:8000/api/movies/?page=2",
+  "previous": null,
+  "results": [
+    { "id": 1, "title": "The Matrix", ... },
+    { "id": 2, "title": "Inception", ... },
+    ...
+  ]
+}
+```
+
+Onde:
+- `count`: número total de filmes
+- `next`: URL para a próxima página (null se for a última)
+- `previous`: URL para a página anterior (null se for a primeira)
+- `results`: array com os filmes da página atual
+
+## Desenvolvimento
+
+### Executando os Testes
+
+```bash
+docker-compose exec web python manage.py test movies
+```
+
+### Acessando o Admin do Django
+
+1. Crie um superusuário:
+   ```bash
+   docker-compose exec web python manage.py createsuperuser
+   ```
+
+2. Acesse o admin em [http://localhost:8000/admin/](http://localhost:8000/admin/)
+
+### Estrutura do Projeto
+
+- `movies/models.py`: Define o modelo de dados para filmes
+- `movies/serializers.py`: Serializa objetos do modelo para JSON
+- `movies/views.py`: Implementa os endpoints da API
+- `movies/services.py`: Contém a lógica para consultar a OMDb API
+- `movies/filters.py`: Define os filtros disponíveis para busca de filmes
+
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para mais detalhes.
